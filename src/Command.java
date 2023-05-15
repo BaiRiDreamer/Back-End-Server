@@ -121,20 +121,27 @@ public class Command implements Serializable
             {
                 ResultSet resultSet = database.getAllPost();
                 JSONArray jsonArray = new JSONArray();
+
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("post_id", resultSet.getString("post_id"));
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
                     jsonObject.put("title", resultSet.getString("title"));
                     jsonObject.put("content", resultSet.getString("content"));
-                    jsonObject.put("posting_time", resultSet.getString("posting_time"));
-                    jsonObject.put("posting_city_id", resultSet.getString("posting_city_id"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
                     jsonObject.put("author_name", resultSet.getString("author_name"));
                     jsonObject.put("filename", resultSet.getString("filename"));
-                    jsonObject.put("isunKnown", resultSet.getString("isunKnown"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
 
                     jsonArray.add(jsonObject);
                 }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "没有帖子被发布 ( •̀ ω •́ )✧");
+                }
+
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             }
@@ -144,8 +151,82 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "registerNewUser"){
-            return new Response("true", "Register successfully");
+        else if (command == "getIthIdPost")
+        {
+            try
+            {
+                ResultSet resultSet = database.getIthIdPost(Integer.parseInt(args[0]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "没有帖子被发布 ( •̀ ω •́ )✧");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+            catch (Exception e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command == "getPublishedPost"){
+            try
+            {
+                ResultSet resultSet = database.getPublishedPost(args[0]);
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "没有帖子被发布 ( •̀ ω •́ )✧");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+            catch (Exception e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
         }
         else {
             return new Response("false", "Unknown command");

@@ -1,3 +1,4 @@
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,13 +24,16 @@ public class ClientHandler implements Runnable
         {
             ois = new ObjectInputStream(clientSocket.getInputStream());
             oos = new ObjectOutputStream(clientSocket.getOutputStream());
-            System.out.println("New client connected");
 
+            System.out.println("New client connected");
             //将获取的内容反序列化
-            Command command = (Command) ois.readObject();
-            command.database = database;
-            oos.writeObject(command.execute());
-            oos.flush();
+            while (true)
+            {
+                Command command = (Command) ois.readObject();
+                command.database = database;
+                oos.writeObject(command.execute());
+                oos.flush();
+            }
         }
         catch (IOException e)
         {

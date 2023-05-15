@@ -204,28 +204,23 @@ public class Database
         return rs;
     }
 
-    public ResultSet getIthPost (int postId) throws Exception
+    public ResultSet getIthIdPost (int postId) throws SQLException
     {
-        String sql = String.format("select * from post where post_id=%d", postId);
-        PreparedStatement preparedStatement = con.prepareStatement(sql
-                , TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//        preparedStatement.setFetchSize(20);
-//        preparedStatement.setFetchDirection(ResultSet.TYPE_SCROLL_INSENSITIVE);
+        String sql = "select * from post where post_id= ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+
         ResultSet rs = preparedStatement.executeQuery();
         return rs;
     }
 
-    public static ResultSet getPublishedPost (String username) throws Exception
+    public ResultSet getPublishedPost (String username) throws Exception
     {
         String sql = "select * from post where author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
         ResultSet rs = preparedStatement.executeQuery();
-        if (!rs.next())
-        {
-            throw new Exception("暂时没有发表过任何帖子`(*>﹏<*)′");
-        }
-        rs.beforeFirst();
+
         return rs;
     }
 }
