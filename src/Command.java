@@ -228,6 +228,21 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
+        else if (command == "getPostCnt"){
+            try
+            {
+                ResultSet resultSet = database.getAllPost();
+                resultSet.last();
+                int cnt = resultSet.getRow();
+                return new Response("true", Integer.toString(cnt));
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+
+        }
         else {
             return new Response("false", "Unknown command");
         }
