@@ -214,7 +214,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getPublishedPost (String username) throws Exception
+    public ResultSet getPublishedPost (String username) throws SQLException
     {
         String sql = "select * from post where author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
@@ -223,4 +223,5 @@ public class Database
 
         return rs;
     }
+
 }

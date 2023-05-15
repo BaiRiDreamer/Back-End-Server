@@ -243,6 +243,26 @@ public class Command implements Serializable
             }
 
         }
+        else if (command == "getUserPostCnt")
+        {
+            try
+            {
+                ResultSet resultSet = database.getPublishedPost(args[0]);
+                if (resultSet == null) {
+                    return new Response("true", "该用户还没发表过帖子捏");
+                }
+                resultSet.last();
+                int mypostCnt = resultSet.getRow();
+                return new Response("true", Integer.toString(mypostCnt));
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+
+
+        }
         else {
             return new Response("false", "Unknown command");
         }
