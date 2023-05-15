@@ -11,7 +11,7 @@ public class Database
     private ResultSet resultSet;
 
     private String host = "localhost";
-    private String dbname = "Java";
+    private String dbname = "Project2";
     private String user = "checker";
     private String pwd = "123456";
     private String port = "5432";
@@ -75,7 +75,7 @@ public class Database
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
-    public boolean isUserExist (String username, String userId) throws Exception
+    public boolean isUserExist (String username, String userId) throws SQLException
     {
         String sqlUsername = "select * from author where author_name = ?";
         PreparedStatement prepStUsername = con.prepareStatement(sqlUsername);
@@ -107,7 +107,7 @@ public class Database
      * @param password
      * @return Exception
      */
-    public String isUserValid (String username, String password) throws Exception
+    public boolean isUserValid (String username, String password) throws Exception
     {
         String sqlUsername = "select * from author where author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sqlUsername);
@@ -118,7 +118,7 @@ public class Database
         {
             if (resultSetName.getString("password").equals(password))
             {
-                return "true";
+                return true;
             }
             else
             {
@@ -134,7 +134,7 @@ public class Database
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
-    public boolean registerNewUser (String username, String userId, String phone, String password) throws Exception
+    public boolean registerNewUser (String username, String userId, String phone, String password) throws SQLException
     {
         String sqlUsername = "insert into author (author_name, author_registration_time, author_phone, password) values (?,?, ?, ?)";
         PreparedStatement prepStUsername = con.prepareStatement(sqlUsername);
@@ -160,7 +160,7 @@ public class Database
         }
     }
 
-    public boolean PublishPost (String username, String title, String content, String country, String city) throws Exception
+    public boolean PublishPost (String username, String title, String content, String country, String city, String fileName, byte[] file) throws SQLException
     {
         String cityInsert = "insert into city (city, country) values (?, ?) on conflict do nothing";
         PreparedStatement preparedStatementCity = con.prepareStatement(cityInsert);
@@ -174,13 +174,15 @@ public class Database
         preparedStatementCitySearch.setString(2, country);
         ResultSet resultSetCity = preparedStatementCitySearch.executeQuery();
 
-        String sql = "insert into post (title, content, posting_time, posting_city_id, author_name) values (?, ?, ?, ?, ?)";
+        String sql = "insert into post (title, content, posting_time, posting_city_id, author_name, filename, file) values (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, title);
         preparedStatement.setString(2, content);
         preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
         preparedStatement.setString(4, resultSetCity.getString("city_id"));
         preparedStatement.setString(5, username);
+        preparedStatement.setString(6, fileName);
+        preparedStatement.setBytes(7, file);
 
         if (preparedStatement.execute())
         {
@@ -192,12 +194,11 @@ public class Database
         }
     }
 
-    public ResultSet getAllPost () throws Exception
+    public ResultSet getAllPost () throws SQLException
     {
         String sql = "select * from post";
         PreparedStatement preparedStatement = con.prepareStatement(sql, TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//        preparedStatement.setFetchSize(20);
-//        preparedStatement.setFetchDirection(ResultSet.TYPE_SCROLL_INSENSITIVE);
+
         ResultSet rs = preparedStatement.executeQuery();
 
         return rs;
