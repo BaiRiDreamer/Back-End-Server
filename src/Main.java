@@ -23,13 +23,13 @@ public class Main
         {
             System.out.println("Server is listening on port " + PORT);
             Database database = new Database();
-//            while (true)
-//            {
+            while (true)
+            {
                 Socket clientSocket = serverSocket.accept();
                 //ClinetHandler是对一个客户端操作的请求处理类,通过线程池来创建一个客户端处理类,从而对一个客户端进行控制
                 executor.submit(new ClientHandler(clientSocket, database));
                 System.out.println("New client connected, the task has been submitted to the thread pool");
-//            }
+            }
         }
         catch (IOException e)
         {
