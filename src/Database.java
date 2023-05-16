@@ -224,5 +224,120 @@ public class Database
 
         return rs;
     }
+    
+    public ResultSet getUserFollowBy (String username) throws SQLException
+    {
+        String sql = "select follow_author_name from author_followed_by where author_name = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
 
+    public ResultSet getPostLiked (int postId) throws SQLException
+    {
+        String sql = "select author_name from post_liked where post_id = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+    public ResultSet getPostShared (int postId) throws SQLException
+    {
+        String sql = "select author_name from post_shared where post_id = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+    public ResultSet getPostfavorited (int postId) throws SQLException
+    {
+        String sql = "select author_name from post_favorited where post_id = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+    public boolean likePost (String username, int postId) throws SQLException
+    {
+        String sql = "insert into post_liked (post_id, author_name) values (?, ?)";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        preparedStatement.setString(2, username);
+        if (preparedStatement.execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public boolean sharePost (String username, int postId) throws SQLException
+    {
+        String sql = "insert into post_shared (post_id, author_name) values (?, ?)";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        preparedStatement.setString(2, username);
+        if (preparedStatement.execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public boolean favoritePost (String username, int postId) throws SQLException
+    {
+        String sql = "insert into post_favorited (post_id, author_name) values (?, ?)";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        preparedStatement.setString(2, username);
+        if (preparedStatement.execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean followUser (String username, String followUsername) throws SQLException
+    {
+        String sql = "insert into author_followed_by (author_name, follow_author_name) values (?, ?)";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setString(1, followUsername);
+        preparedStatement.setString(2, username);
+        if (preparedStatement.execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public boolean unFollowUser (String username, String followUsername) throws SQLException
+    {
+        String sql = "delete from author_followed_by where author_name = ? and follow_author_name = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setString(1, followUsername);
+        preparedStatement.setString(2, username);
+        if (preparedStatement.execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

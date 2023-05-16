@@ -271,10 +271,201 @@ public class Command implements Serializable
 
 
         }
-//        else if (command == "")
-//        {
-//
-//        }
+        else if (command.equals("getUserFollowBy"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getUserFollowBy(args[0]);
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("follow_author_name", resultSet.getInt("follow_author_name"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该用户还没有关注任何人捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getPostLiked"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getPostLiked(Integer.parseInt(args[0]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("author_name", resultSet.getInt("author_name"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该帖子还没有被任何人喜欢捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getPostShared"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getPostShared(Integer.parseInt(args[0]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("author_name", resultSet.getInt("author_name"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该帖子还没有被任何人分享捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getPostfavorited"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getPostfavorited(Integer.parseInt(args[0]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("author_name", resultSet.getInt("author_name"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该帖子还没有被任何人收藏捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("likePost"))
+        {
+            try
+            {
+                if (database.likePost(args[0], Integer.parseInt(args[1])))
+                {
+                    return new Response("true", "点赞成功");
+                }
+                else
+                {
+                    return new Response("false", "点赞失败");
+                }
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("sharePost"))
+        {
+            try
+            {
+                if (database.sharePost((args[0]), Integer.parseInt(args[1])))
+                {
+                    return new Response("true", "分享成功");
+                }
+                else
+                {
+                    return new Response("false", "分享失败");
+                }
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("favoritePost"))
+        {
+            try
+            {
+                if (database.favoritePost(args[0], Integer.parseInt(args[1])))
+                {
+                    return new Response("true", "收藏成功");
+                }
+                else
+                {
+                    return new Response("false", "收藏失败");
+                }
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("followUser"))
+        {
+            try
+            {
+                if (database.followUser(args[0], args[1]))
+                {
+                    return new Response("true", "关注成功");
+                }
+                else
+                {
+                    return new Response("false", "关注失败");
+                }
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("unFollowUser"))
+        {
+            try
+            {
+                if (database.unFollowUser(args[0], args[1]))
+                {
+                    return new Response("true", "取消关注成功");
+                }
+                else
+                {
+                    return new Response("false", "取消关注失败");
+                }
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
         else
         {
             return new Response("false", "Unknown command");
