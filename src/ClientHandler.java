@@ -4,6 +4,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * @author Li Weihao
+ */
 public class ClientHandler implements Runnable
 {
     private Socket clientSocket;

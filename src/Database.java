@@ -160,7 +160,7 @@ public class Database
         }
     }
 
-    public boolean PublishPost (String username, String title, String content, String country, String city, String fileName, byte[] file) throws SQLException
+    public boolean PublishPost (String username, String title, String content, String country, String city, String fileName, byte[] file, boolean isUnknown) throws SQLException
     {
         String cityInsert = "insert into city (city, country) values (?, ?) on conflict do nothing";
         PreparedStatement preparedStatementCity = con.prepareStatement(cityInsert);
@@ -174,7 +174,7 @@ public class Database
         preparedStatementCitySearch.setString(2, country);
         ResultSet resultSetCity = preparedStatementCitySearch.executeQuery();
 
-        String sql = "insert into post (title, content, posting_time, posting_city_id, author_name, filename, file) values (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into post (title, content, posting_time, posting_city_id, author_name, filename, file, isunknown) values (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, title);
         preparedStatement.setString(2, content);
@@ -183,6 +183,7 @@ public class Database
         preparedStatement.setString(5, username);
         preparedStatement.setString(6, fileName);
         preparedStatement.setBytes(7, file);
+        preparedStatement.setBoolean(8, isUnknown);
 
         if (preparedStatement.execute())
         {

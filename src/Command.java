@@ -21,6 +21,7 @@ public class Command implements Serializable
         this.command = command;
         this.args = args;
     }
+
     public Command (String command, String[] args, byte[] file)
     {
         this.command = command;
@@ -43,7 +44,7 @@ public class Command implements Serializable
 
     public Response execute ()
     {
-        if (command == "isUserExist")
+        if (command.equals("isUserExist"))
         {
             try
             {
@@ -62,7 +63,7 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "isUserValid")
+        else if (command.equals("isUserValid"))
         {
             try
             {
@@ -77,10 +78,10 @@ public class Command implements Serializable
             catch (Exception e)
             {
                 System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                return new Response("false", e.toString());
             }
         }
-        else if (command == "registerNewUser")
+        else if (command.equals("registerNewUser"))
         {
             try
             {
@@ -99,13 +100,17 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "PublishPost")
+        else if (command.equals("PublishPost"))
         {
-            try{
-                if(database.PublishPost(args[0], args[1], args[2], args[3], args[4], args[5], file)){
+            try
+            {
+                boolean tmp = args[6].equals("true") ? true : false;
+                if (database.PublishPost(args[0], args[1], args[2], args[3], args[4], args[5], file, tmp))
+                {
                     return new Response("true", "Publish post successfully");
                 }
-                else{
+                else
+                {
                     return new Response("false", "Publish post failed");
                 }
             }
@@ -115,7 +120,7 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "getAllPost")
+        else if (command.equals("getAllPost"))
         {
             try
             {
@@ -151,7 +156,7 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "getIthIdPost")
+        else if (command.equals("getIthIdPost"))
         {
             try
             {
@@ -190,7 +195,8 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "getPublishedPost"){
+        else if (command.equals("getPublishedPost"))
+        {
             try
             {
                 ResultSet resultSet = database.getPublishedPost(args[0]);
@@ -228,7 +234,8 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
-        else if (command == "getPostCnt"){
+        else if (command.equals("getPostCnt"))
+        {
             try
             {
                 ResultSet resultSet = database.getAllPost();
@@ -243,12 +250,13 @@ public class Command implements Serializable
             }
 
         }
-        else if (command == "getUserPostCnt")
+        else if (command.equals("getUserPostCnt"))
         {
             try
             {
                 ResultSet resultSet = database.getPublishedPost(args[0]);
-                if (resultSet == null) {
+                if (resultSet == null)
+                {
                     return new Response("true", "该用户还没发表过帖子捏");
                 }
                 resultSet.last();
@@ -263,7 +271,12 @@ public class Command implements Serializable
 
 
         }
-        else {
+//        else if (command == "")
+//        {
+//
+//        }
+        else
+        {
             return new Response("false", "Unknown command");
         }
     }
