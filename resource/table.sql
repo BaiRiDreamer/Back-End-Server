@@ -37,6 +37,7 @@ create table if not exists post
     author_name     text      not null --5.11 改成了不是unique的
         constraint author_con_POST references author (author_name),
     fileName        text,       --文件名--Lwh,modified, 5.11
+    file            bytea,      --文件内容
     isUnknown       bool        --表示是不是匿名的，先初始化成false, 之后如果author选择匿名就变成true  --把post传给gui展示时如果这个值是true 就把author name 设置成'unknown'
 );
 
