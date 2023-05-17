@@ -104,7 +104,7 @@ public class Command implements Serializable
         {
             try
             {
-                boolean tmp = args[6].equals("true") ? true : false;
+                boolean tmp = args[6].equals("true");
                 if (database.PublishPost(args[0], args[1], args[2], args[3], args[4], args[5], file, tmp))
                 {
                     return new Response("true", "Publish post successfully");
@@ -241,6 +241,7 @@ public class Command implements Serializable
                 ResultSet resultSet = database.getAllPost();
                 resultSet.last();
                 int cnt = resultSet.getRow();
+                resultSet.beforeFirst();
                 return new Response("true", Integer.toString(cnt));
             }
             catch (SQLException e)
@@ -261,6 +262,7 @@ public class Command implements Serializable
                 }
                 resultSet.last();
                 int mypostCnt = resultSet.getRow();
+                resultSet.beforeFirst();
                 return new Response("true", Integer.toString(mypostCnt));
             }
             catch (SQLException e)
