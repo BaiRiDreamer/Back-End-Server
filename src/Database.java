@@ -307,4 +307,68 @@ public class Database {
             return false;
         }
     }
+    
+    public ResultSet getPostReply (int postId) throws SQLException {
+        String sql = "select * from reply where post_id = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+    public ResultSet getReplySecreply (int replyId) throws SQLException {
+        String sql = "select * from sec_reply where reply_id = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, replyId);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+    public ResultSet searchPostOr (String author_name, String title, String content, int postId) throws SQLException {
+        if (postId != -1){
+            String sql = "select * from post where post.author_name like ? or post.title like ? or post.content like ?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setString(1, "%" + author_name + "%");
+            preparedStatement.setString(2, "%" + title + "%");
+            preparedStatement.setString(3, "%" + content + "%");
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs;
+        }
+        else {
+            String sql = "select * from post where post_id = ?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, postId);
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs;
+        }
+    }
+    
+    public ResultSet searchPostAnd (String author_name, String title, String content, int postId) throws SQLException {
+        if (postId != -1){
+            String sql = "select * from post where post.author_name like ? and post.title like ? and post.content like ?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setString(1, "%" + author_name + "%");
+            preparedStatement.setString(2, "%" + title + "%");
+            preparedStatement.setString(3, "%" + content + "%");
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs;
+        }
+        else {
+            String sql = "select * from post where post_id = ?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, postId);
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs;
+        }
+    }
+
+    public ResultSet getUserHadReply (String username) throws SQLException {
+        String sql = "select * from reply r join post p on p.post_id = r.post_id where r.reply_author = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+
 }

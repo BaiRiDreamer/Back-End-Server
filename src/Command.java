@@ -468,9 +468,169 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.toString());
             }
         }
+        else if (command.equals("getPostReply"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getPostReply(Integer.parseInt(args[0]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("reply_id", resultSet.getInt("reply_id"));
+                    jsonObject.put("post_id", resultSet.getString("post_id"));
+                    jsonObject.put("reply_content", resultSet.getString("reply_content"));
+                    jsonObject.put("reply_stars", resultSet.getInt("reply_stars"));
+                    jsonObject.put("reply_author", resultSet.getString("reply_author"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该帖子还没有回复捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+
+        }
+        else if (command.equals("getReplySecreply"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getReplySecreply(Integer.parseInt(args[0]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("sec_reply_id", resultSet.getInt("sec_reply_id"));
+                    jsonObject.put("reply_id", resultSet.getInt("reply_id"));
+                    jsonObject.put("sec_reply_content", resultSet.getString("sec_reply_content"));
+                    jsonObject.put("sec_reply_stars", resultSet.getInt("sec_reply_stars"));
+                    jsonObject.put("sec_reply_author", resultSet.getString("sec_reply_author"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该回复还没有二级回复捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        /**
+         * 注意注意，该处是近似搜索，即搜索的是包含关键字的帖子
+         */
+        else if (command.equals("searchPostOr"))
+        {
+            try
+            {
+                ResultSet resultSet = database.searchPostOr(args[0], args[1], args[2], Integer.parseInt(args[3]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "没有找到相关帖子捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        /**
+         * 注意注意，该处是近似搜索，即搜索的是包含关键字的帖子
+         */
+        else if (command.equals("searchPostAnd"))
+        {
+            try
+            {
+                ResultSet resultSet = database.searchPostAnd(args[0], args[1], args[2], Integer.parseInt(args[3]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "没有找到相关帖子捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getUserHadReply"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getUserHadReply(args[0]);
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("reply_id", resultSet.getInt("reply_id"));
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("reply_content", resultSet.getString("reply_content"));
+                    jsonObject.put("reply_stars", resultSet.getInt("reply_stars"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该用户还没有回复捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
         else
         {
-            return new Response("false", "Unknown command");
+            return new Response("false", "未知命令");
         }
     }
 }
