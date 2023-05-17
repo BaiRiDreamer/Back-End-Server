@@ -67,7 +67,7 @@ public class Database {
 
         String sqlUserID = "select * from author_and_id where author_id = ?";
         PreparedStatement prepStUserID = con.prepareStatement(sqlUserID);
-        prepStUserID.setString(1, username);
+        prepStUserID.setString(1, userId);
 
         ResultSet resultSetName = prepStUsername.executeQuery();
         ResultSet resultSetID = prepStUserID.executeQuery();
@@ -253,9 +253,11 @@ public class Database {
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, username);
-        if (preparedStatement.execute()) {
+        try {
+            preparedStatement.execute();
             return true;
-        } else {
+        } catch (SQLException e) {
+//            System.out.println(e);
             return false;
         }
     }
@@ -265,9 +267,11 @@ public class Database {
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, username);
-        if (preparedStatement.execute()) {
+        try {
+            preparedStatement.execute();
             return true;
-        } else {
+        } catch (SQLException e) {
+//            System.out.println(e);
             return false;
         }
     }
@@ -277,9 +281,11 @@ public class Database {
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, username);
-        if (preparedStatement.execute()) {
+        try {
+            preparedStatement.execute();
             return true;
-        } else {
+        } catch (SQLException e) {
+//            System.out.println(e);
             return false;
         }
     }
@@ -289,9 +295,11 @@ public class Database {
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, followUsername);
         preparedStatement.setString(2, username);
-        if (preparedStatement.execute()) {
+        try {
+            preparedStatement.execute();
             return true;
-        } else {
+        } catch (SQLException e) {
+//            System.out.println(e);
             return false;
         }
     }
@@ -301,9 +309,11 @@ public class Database {
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, followUsername);
         preparedStatement.setString(2, username);
-        if (preparedStatement.execute()) {
+        try {
+            preparedStatement.execute();
             return true;
-        } else {
+        } catch (SQLException e) {
+//            System.out.println(e);
             return false;
         }
     }
