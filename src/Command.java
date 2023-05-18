@@ -124,7 +124,7 @@ public class Command implements Serializable
         {
             try
             {
-                ResultSet resultSet = database.getAllPost();
+                ResultSet resultSet = database.getAllPost(args[0]);
                 JSONArray jsonArray = new JSONArray();
 
                 while (resultSet.next())
@@ -238,7 +238,7 @@ public class Command implements Serializable
         {
             try
             {
-                ResultSet resultSet = database.getAllPost();
+                ResultSet resultSet = database.getAllPost(args[0]);
                 resultSet.last();
                 int cnt = resultSet.getRow();
                 resultSet.beforeFirst();
@@ -270,8 +270,6 @@ public class Command implements Serializable
                 System.err.println(e.toString());
                 return new Response("DatabaseErr", e.toString());
             }
-
-
         }
         else if (command.equals("getUserFollowBy"))
         {
@@ -282,7 +280,7 @@ public class Command implements Serializable
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("follow_author_name", resultSet.getInt("follow_author_name"));
+                    jsonObject.put("follow_author_name", resultSet.getString("follow_author_name"));
                     jsonArray.add(jsonObject);
                 }
                 if (jsonArray.isEmpty())
@@ -621,6 +619,124 @@ public class Command implements Serializable
                 }
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getUserHadLiked"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getUserHadLiked(args[0]);
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该用户还没有点赞过任何帖子捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getUserHadShared"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getUserHadShared(args[0]);
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该用户还没有分享过任何帖子捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("getUserHadFavorited"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getUserHadFavorited(args[0]);
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "该用户还没有收藏过任何帖子捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.toString());
+                return new Response("DatabaseErr", e.toString());
+            }
+        }
+        else if (command.equals("blockUser"))
+        {
+            try
+            {
+                if (database.blockUser(args[0], args[1]))
+                {
+                    return new Response("true", "已屏蔽该用户");
+                }
+                else
+                {
+                    return new Response("false", "该用户不存在,你在逗我玩么");
+                }
             }
             catch (SQLException e)
             {
