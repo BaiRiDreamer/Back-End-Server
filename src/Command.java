@@ -332,7 +332,7 @@ public class Command implements Serializable
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("author_name", resultSet.getInt("author_name"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
                     jsonArray.add(jsonObject);
                 }
                 if (jsonArray.isEmpty())
@@ -357,7 +357,7 @@ public class Command implements Serializable
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("author_name", resultSet.getInt("author_name"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
                     jsonArray.add(jsonObject);
                 }
                 if (jsonArray.isEmpty())
@@ -478,7 +478,7 @@ public class Command implements Serializable
                 {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("reply_id", resultSet.getInt("reply_id"));
-                    jsonObject.put("post_id", resultSet.getString("post_id"));
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
                     jsonObject.put("reply_content", resultSet.getString("reply_content"));
                     jsonObject.put("reply_stars", resultSet.getInt("reply_stars"));
                     jsonObject.put("reply_author", resultSet.getString("reply_author"));
