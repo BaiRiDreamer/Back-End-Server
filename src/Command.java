@@ -768,7 +768,7 @@ public class Command implements Serializable
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("reply_content", resultSet.getInt("reply_content"));
+                    jsonObject.put("reply_content", resultSet.getString("reply_content"));
                     jsonObject.put("reply_author", resultSet.getString("reply_author"));
                     jsonObject.put("reply_stars", resultSet.getInt("reply_stars"));
                     jsonArray.add(jsonObject);
