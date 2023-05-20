@@ -286,13 +286,17 @@ public class Command implements Serializable
             {
                 ResultSet resultSet = database.getUserFollowBy(args[0]);
                 JSONArray jsonArray = new JSONArray();
+//                List<String> authorFollowedBy = new ArrayList<>();
 
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
+//                    authorFollowedBy.add(resultSet.getString("follow_author_name"));
                     jsonObject.put("followedAuthorName", resultSet.getString("follow_author_name"));
                     jsonArray.add(jsonObject);
                 }
+//                jsonObject.put("authorFollowedBy", authorFollowedBy);
+//                jsonArray.add(jsonObject);
 
                 if (jsonArray.isEmpty())
                 {
@@ -764,7 +768,7 @@ public class Command implements Serializable
                 while (resultSet.next())
                 {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("reply_content", resultSet.getString("reply_content"));
+                    jsonObject.put("reply_content", resultSet.getInt("reply_content"));
                     jsonObject.put("reply_author", resultSet.getString("reply_author"));
                     jsonObject.put("reply_stars", resultSet.getInt("reply_stars"));
                     jsonArray.add(jsonObject);

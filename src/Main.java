@@ -1,11 +1,7 @@
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.chrono.ChronoLocalDate;
 import java.util.concurrent.*;
 
@@ -38,18 +34,6 @@ public class Main
         catch (IOException e)
         {
             System.err.println("ServerSocket exception: " + e.getMessage());
-        }
-
-
-        //测试
-        Database database = new Database();
-        try
-        {
-            database.PublishPost("liweihao", "testPost", "测试file的反序列化功能", "China", "ShenZhen", "testFile", new byte[]{1,2,3,4,5,6,7,8}, false);
-        }
-        catch (SQLException e)
-        {
-            throw new RuntimeException(e);
         }
     }
 }
