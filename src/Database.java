@@ -4,6 +4,7 @@ import static java.sql.ResultSet.TYPE_SCROLL_SENSITIVE;
 
 /**
  * 该类是用来操作数据库所需要的方法和函数等
+ *
  * @author Li Weihao
  */
 public class Database
@@ -133,7 +134,7 @@ public class Database
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
-    public boolean registerNewUser (String username, String userId, String phone, String password,String password1) throws SQLException
+    public boolean registerNewUser (String username, String userId, String phone, String password) throws SQLException
     {
         String sqlUsername = "insert into author (author_name, author_registration_time, author_phone, password) values (?,?, ?, ?)";
         PreparedStatement prepStUsername = con.prepareStatement(sqlUsername);
@@ -465,10 +466,55 @@ public class Database
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, beBlockedUserName);
-        if (preparedStatement.executeUpdate() == 0){
+        if (preparedStatement.executeUpdate() == 0)
+        {
             return false;
         }
-        else{
+        else
+        {
+            return true;
+        }
+    }
+
+    public ResultSet getIthreply (int replyId) throws SQLException
+    {
+        String sql = "select reply_content, reply_author, reply_stars from reply where reply_id = ?";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, replyId);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
+    }
+    
+    public boolean replyPost (int postId, String replyContent, String replyAuthorName) throws SQLException
+    {
+        String sql = "insert into reply (post_id, reply_content, reply_author, reply_stars) values (?, ?, ?, 0)";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, postId);
+        preparedStatement.setString(2, replyContent);
+        preparedStatement.setString(3, replyAuthorName);
+        if (preparedStatement.executeUpdate() == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    public boolean replySecReply (int replyId, String secReplyContent, String replyAuthorName) throws SQLException
+    {
+        String sql = "insert into sec_reply (reply_id, sec_reply_content, sec_reply_author, sec_reply_stars) values (?, ?, ?, 0)";
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setInt(1, replyId);
+        preparedStatement.setString(2, secReplyContent);
+        preparedStatement.setString(3, replyAuthorName);
+        if (preparedStatement.executeUpdate() == 0)
+        {
+            return false;
+        }
+        else
+        {
             return true;
         }
     }
