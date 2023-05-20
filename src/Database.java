@@ -175,25 +175,20 @@ public class Database
         preparedStatementCitySearch.setString(2, country);
         ResultSet resultSetCity = preparedStatementCitySearch.executeQuery();
 
-        ResultSet resultSet = getAllPost("admin");
-        resultSet.last();
-        int postcnt = resultSet.getRow();
-        resultSet.beforeFirst();
 
-        String sql = "insert into post (post_id,title, content, posting_time, posting_city_id, author_name, filename, file, isunknown) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into post (title, content, posting_time, posting_city_id, author_name, filename, file, isunknown) values ( ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
-        preparedStatement.setInt(1, postcnt);
-        preparedStatement.setString(2, title);
-        preparedStatement.setString(3, content);
-        preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+        preparedStatement.setString(1, title);
+        preparedStatement.setString(2, content);
+        preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
         if (resultSetCity.next())
         {
-            preparedStatement.setInt(5, resultSetCity.getInt("city_id"));
+            preparedStatement.setInt(4, resultSetCity.getInt("city_id"));
         }
-        preparedStatement.setString(6, username);
-        preparedStatement.setString(7, fileName);
-        preparedStatement.setBytes(8, file);
-        preparedStatement.setBoolean(9, isUnknown);
+        preparedStatement.setString(5, username);
+        preparedStatement.setString(6, fileName);
+        preparedStatement.setBytes(7, file);
+        preparedStatement.setBoolean(8, isUnknown);
         try
         {
             preparedStatement.execute();
