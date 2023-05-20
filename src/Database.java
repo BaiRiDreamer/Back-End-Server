@@ -484,14 +484,22 @@ public class Database
         ResultSet rs = preparedStatement.executeQuery();
         return rs;
     }
-    
+
     public boolean replyPost (int postId, String replyContent, String replyAuthorName) throws SQLException
     {
-        String sql = "insert into reply (post_id, reply_content, reply_author, reply_stars) values (?, ?, ?, 0)";
+        String sqlGetReplyCnt = "select * from reply";
+        PreparedStatement preparedStatementGetReplyCnt = con.prepareStatement(sqlGetReplyCnt);
+        ResultSet rs = preparedStatementGetReplyCnt.executeQuery();
+        rs.last();
+        int replyCnt = rs.getRow(); 
+
+        
+        String sql = "insert into reply (post_id, reply_content, reply_author, reply_stars, reply_id) values (?, ?, ?,0,?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, replyContent);
         preparedStatement.setString(3, replyAuthorName);
+        preparedStatement.setInt(4, replyCnt + 1);
         if (preparedStatement.executeUpdate() == 0)
         {
             return false;
@@ -501,7 +509,7 @@ public class Database
             return true;
         }
     }
-    
+
     public boolean replySecReply (int replyId, String secReplyContent, String replyAuthorName) throws SQLException
     {
         String sql = "insert into sec_reply (reply_id, sec_reply_content, sec_reply_author, sec_reply_stars) values (?, ?, ?, 0)";
