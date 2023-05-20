@@ -105,7 +105,7 @@ public class Command implements Serializable {
                     jsonObject.put("author_name", resultSet.getString("author_name"));
                     jsonObject.put("filename", resultSet.getString("filename"));
                     jsonObject.put("file", resultSet.getBytes("file"));
-                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonObject.put("isUnKnown", resultSet.getBoolean("isunKnown"));
 
                     jsonArray.add(jsonObject);
                 }
