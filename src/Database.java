@@ -347,8 +347,8 @@ public class Database
     {
         String sql = "delete from author_followed_by where author_name = ? and follow_author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
-        preparedStatement.setString(1, followUsername);
-        preparedStatement.setString(2, username);
+        preparedStatement.setString(2, followUsername);
+        preparedStatement.setString(1, username);
         try
         {
             preparedStatement.execute();
@@ -356,7 +356,7 @@ public class Database
         }
         catch (SQLException e)
         {
-//            System.out.println(e);
+            System.out.println(e);
             return false;
         }
     }
