@@ -133,7 +133,7 @@ public class Database
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
-    public boolean registerNewUser (String username, String userId, String phone, String password) throws SQLException
+    public boolean registerNewUser (String username, String userId, String phone, String password,String password1) throws SQLException
     {
         String sqlUsername = "insert into author (author_name, author_registration_time, author_phone, password) values (?,?, ?, ?)";
         PreparedStatement prepStUsername = con.prepareStatement(sqlUsername);
@@ -329,8 +329,8 @@ public class Database
     {
         String sql = "insert into author_followed_by (author_name, follow_author_name) values (?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
-        preparedStatement.setString(1, followUsername);
-        preparedStatement.setString(2, username);
+        preparedStatement.setString(2, followUsername);
+        preparedStatement.setString(1, username);
         try
         {
             preparedStatement.execute();

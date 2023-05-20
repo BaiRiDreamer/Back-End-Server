@@ -39,7 +39,7 @@ public class Command implements Serializable {
         return result;
     }
 
-    public Response execute() {
+    public Response execute() throws Exception {
         if (command.equals("isUserExist")) {
             try {
                 if (database.isUserExist(args[0], args[1])) {
@@ -48,30 +48,35 @@ public class Command implements Serializable {
                     return new Response("false", "The user does not exist");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("isUserValid")) {
             try {
                 database.isUserValid(args[0], args[1]);
                 return new Response("true", "The user is valid");
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             } catch (Exception e) {
-                System.err.println(e.toString());
-                return new Response("false", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("false", e.getMessage());
             }
         } else if (command.equals("registerNewUser")) {
-            try {
-                if (database.registerNewUser(args[0], args[1], args[2], args[3])) {
-                    return new Response("true", "Register successfully");
-                } else {
-                    return new Response("false", "Register failed");
+//            ImplementMethord.isValidInformation(args[0], args[1], args[2], args[3], args[4]);
+            if (database.isUserExist(args[0], args[1])) {
+                throw new Exception("用户名或者ID已经存在");
+            } else {
+                try {
+                    if (database.registerNewUser(args[0], args[1], args[2], args[3], args[4])) {
+                        return new Response("true", "Register successfully");
+                    } else {
+                        return new Response("false", "Register failed");
+                    }
+                } catch (SQLException e) {
+                    System.err.println(e);
+                    return new Response("DatabaseErr", e.getMessage());
                 }
-            } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
             }
         } else if (command.equals("PublishPost")) {
             try {
@@ -82,8 +87,8 @@ public class Command implements Serializable {
                     return new Response("false", "Publish post failed");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getAllPost")) {
             try {
@@ -111,8 +116,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getIthIdPost")) {
             try {
@@ -138,11 +143,11 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             } catch (Exception e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getPublishedPost")) {
             try {
@@ -168,11 +173,11 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             } catch (Exception e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getPostCnt")) {
             try {
@@ -182,8 +187,8 @@ public class Command implements Serializable {
                 resultSet.beforeFirst();
                 return new Response("true", Integer.toString(cnt));
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
 
         } else if (command.equals("getUserPostCnt")) {
@@ -197,8 +202,8 @@ public class Command implements Serializable {
                 resultSet.beforeFirst();
                 return new Response("true", Integer.toString(mypostCnt));
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getUserFollowBy")) {
             try {
@@ -221,8 +226,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getPostLiked")) {
             try {
@@ -239,8 +244,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getPostShared")) {
             try {
@@ -257,8 +262,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getPostfavorited")) {
             try {
@@ -275,8 +280,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("likePost")) {
             try {
@@ -286,8 +291,8 @@ public class Command implements Serializable {
                     return new Response("false", "点赞失败");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("sharePost")) {
             try {
@@ -297,8 +302,8 @@ public class Command implements Serializable {
                     return new Response("false", "分享失败");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("favoritePost")) {
             try {
@@ -308,8 +313,8 @@ public class Command implements Serializable {
                     return new Response("false", "收藏失败");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("followUser")) {
             try {
@@ -319,8 +324,8 @@ public class Command implements Serializable {
                     return new Response("false", "关注失败");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("unFollowUser")) {
             try {
@@ -330,8 +335,8 @@ public class Command implements Serializable {
                     return new Response("false", "取消关注失败");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getPostReply")) {
             try {
@@ -352,8 +357,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
 
         } else if (command.equals("getReplySecreply")) {
@@ -375,8 +380,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         }
         /**
@@ -405,8 +410,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         }
         /**
@@ -435,8 +440,8 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else if (command.equals("getUserHadReply")) {
             try {
@@ -457,11 +462,10 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
-        }
-        else if (command.equals("getUserHadLiked")) {
+        } else if (command.equals("getUserHadLiked")) {
             try {
                 ResultSet resultSet = database.getUserHadLiked(args[0]);
                 JSONArray jsonArray = new JSONArray();
@@ -484,11 +488,10 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
-        }
-        else if (command.equals("getUserHadShared")) {
+        } else if (command.equals("getUserHadShared")) {
             try {
                 ResultSet resultSet = database.getUserHadShared(args[0]);
                 JSONArray jsonArray = new JSONArray();
@@ -511,11 +514,10 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
-        }
-        else if (command.equals("getUserHadFavorited")) {
+        } else if (command.equals("getUserHadFavorited")) {
             try {
                 ResultSet resultSet = database.getUserHadFavorited(args[0]);
                 JSONArray jsonArray = new JSONArray();
@@ -538,11 +540,10 @@ public class Command implements Serializable {
                 String jsonString = jsonArray.toString();
                 return new Response("true", jsonString);
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
-        }
-        else if (command.equals("blockUser")) {
+        } else if (command.equals("blockUser")) {
             try {
                 if (database.blockUser(args[0], args[1])) {
                     return new Response("true", "已屏蔽该用户");
@@ -550,8 +551,8 @@ public class Command implements Serializable {
                     return new Response("false", "该用户不存在,你在逗我玩么");
                 }
             } catch (SQLException e) {
-                System.err.println(e.toString());
-                return new Response("DatabaseErr", e.toString());
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
             }
         } else {
             return new Response("false", "未知命令");
