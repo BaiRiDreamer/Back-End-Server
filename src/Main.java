@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.concurrent.*;
 
@@ -15,7 +14,6 @@ import java.util.concurrent.*;
 public class Main
 {
     private static final int PORT = 7345;               //默认服务器监听地址
-    private static final int EXECUTORPOOLSIZE = 10;     //默认服务器线程池大小
     private static final String host = "localhost";
     private static final String port = "5432";
     private static final String dbname = "Project2";

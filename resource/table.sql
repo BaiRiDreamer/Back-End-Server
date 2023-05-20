@@ -5,13 +5,19 @@ create table if not exists author
     author_phone             varchar(15),
     password                 text      not null
 );
+
+
 create table if not exists shield --屏蔽
 (
-    author_name     text not null primary key unique
+    author_name     text not null
         constraint author_con_connect references author (author_name),
-    author_shielded text                                                     --被author屏蔽的
-        constraint author_con_connect_shield references author (author_name) --增加了约束条件--Lwh,modified, 5.11
+    author_shielded text --被author屏蔽的
+        constraint author_con_connect_shield references author (author_name),
+    --增加了约束条件--Lwh,modified, 5.11
+    primary key (author_name, author_shielded)
 );
+
+
 
 create table if not exists author_and_id
 (

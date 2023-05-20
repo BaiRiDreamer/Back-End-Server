@@ -1,4 +1,5 @@
 import java.sql.*;
+
 import static java.sql.ResultSet.TYPE_SCROLL_SENSITIVE;
 
 /**
@@ -106,7 +107,7 @@ public class Database
         prepStUserID.setString(1, userId);
         prepStUserID.setString(2, username);
 
-        if (prepStUsername.executeUpdate()!=0 && prepStUserID.executeUpdate() != 0)
+        if (prepStUsername.executeUpdate() != 0 && prepStUserID.executeUpdate() != 0)
         {
             return true;
         }
@@ -481,5 +482,17 @@ public class Database
         {
             return true;
         }
+    }
+
+    public ResultSet getHotSearches (int likedWeight, int sharedWeight, int favoritedWeight, int replyWeight, int timeDifferenceWeight, int timeDivParameter, int limit) throws SQLException
+    {
+        String sql = "with LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference as (with LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt as(with LikedCnt_SharedCnt_FavoritedCnt as (with LikedCnt_SharedCnt as (with LikedCnt as (select p.*, count(*) as likedCnt from post p left join post_liked pl on p.post_id = pl.post_id group by p.post_id, p.title,p.content,p.posting_time,p.posting_city_id,p.posting_city_id,p.author_name,p.filename, p.file, p.isunknown)select p.*, count(*) as sharedCnt  from LikedCnt p left join post_shared ps on p.post_id = ps.post_id group by p.post_id, p.title, p.content, p.posting_time, p.posting_city_id, p.posting_city_id, p.author_name, p.filename, p.file, p.isunknown, p.likedCnt) select p.*, count(*) as favoritedCnt from LikedCnt_SharedCnt p  left join post_favorited pf on p.post_id = pf.post_id group by p.post_id, p.title, p.content, p.posting_time, p.posting_city_id,  p.posting_city_id,  p.author_name, p.filename, p.file, p.isunknown, p.likedCnt,  p.sharedCnt) select p.*, count(*) as replyCnt from LikedCnt_SharedCnt_FavoritedCnt p left join reply r on p.post_id = r.post_id  group by p.post_id, p.title, p.content, p.posting_time, p.posting_city_id,  p.posting_city_id,   p.author_name, p.filename, p.file, p.isunknown, p.likedCnt, p.sharedCnt, p.favoritedCnt)\n" +
+                "\n" +
+                "select * , div(" + timeDivParameter + ",(extract(seconds from now()-posting_time)*1 + extract(minutes from now()-posting_time)*60 + extract(hours from now()-posting_time)*60*60 + extract(days from now()-posting_time)*24*60*60)) as timeDifference from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt)\n" +
+                "select *, (likedCnt *"+ likedWeight +"+ sharedCnt *"+ sharedWeight +"+ favoritedCnt *"+ favoritedWeight +"+ replyCnt *"+ replyWeight +" + timeDifference * "+ timeDifferenceWeight +") as totalWeight from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference order by totalWeight desc limit "+ limit +";";
+
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
     }
 }

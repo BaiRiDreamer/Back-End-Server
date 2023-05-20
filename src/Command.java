@@ -821,6 +821,45 @@ public class Command implements Serializable
                 return new Response("DatabaseErr", e.getMessage());
             }
         }
+        else if (command.equals("getHotSearches"))
+        {
+            try
+            {
+                ResultSet resultSet = database.getHotSearches(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]));
+                JSONArray jsonArray = new JSONArray();
+                while (resultSet.next())
+                {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("post_id", resultSet.getInt("post_id"));
+                    jsonObject.put("title", resultSet.getString("title"));
+                    jsonObject.put("content", resultSet.getString("content"));
+                    jsonObject.put("posting_time", resultSet.getTimestamp("posting_time"));
+                    jsonObject.put("posting_city_id", resultSet.getInt("posting_city_id"));
+                    jsonObject.put("author_name", resultSet.getString("author_name"));
+                    jsonObject.put("filename", resultSet.getString("filename"));
+                    jsonObject.put("file", resultSet.getBytes("file"));
+                    jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
+                    jsonObject.put("totalWeight", resultSet.getInt("totalWeight"));
+                    jsonObject.put("likeCnt", resultSet.getInt("likeCnt"));
+                    jsonObject.put("sharedCnt", resultSet.getInt("sharedCnt"));
+                    jsonObject.put("favoritedCnt", resultSet.getInt("favoritedCnt"));
+                    jsonObject.put("replyCnt", resultSet.getInt("replyCnt"));
+                    jsonObject.put("timeDifference", resultSet.getInt("timeDifference"));
+                    jsonArray.add(jsonObject);
+                }
+                if (jsonArray.isEmpty())
+                {
+                    return new Response("false", "暂时还没有热搜可以呈现捏");
+                }
+                String jsonString = jsonArray.toString();
+                return new Response("true", jsonString);
+            }
+            catch (SQLException e)
+            {
+                System.err.println(e.getMessage());
+                return new Response("DatabaseErr", e.getMessage());
+            }
+        }
         else
         {
             return new Response("false", "未知命令");
