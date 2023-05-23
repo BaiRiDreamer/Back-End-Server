@@ -7,21 +7,15 @@ import static java.sql.ResultSet.TYPE_SCROLL_SENSITIVE;
  *
  * @author Li Weihao
  */
-public class Database
-{
+public class Database {
     static Connection con = null;
 
-    public void closeDatasource ()
-    {
-        if (con != null)
-        {
-            try
-            {
+    public void closeDatasource() {
+        if (con != null) {
+            try {
                 con.close();
                 con = null;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -30,8 +24,7 @@ public class Database
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
-    public boolean isUserExist (String username, String userId) throws SQLException
-    {
+    public boolean isUserExist(String username, String userId) throws SQLException {
         String sqlUsername = "select * from author where author_name = ?";
         PreparedStatement prepStUsername = con.prepareStatement(sqlUsername);
         prepStUsername.setString(1, username);
@@ -43,12 +36,9 @@ public class Database
         ResultSet resultSetName = prepStUsername.executeQuery();
         ResultSet resultSetID = prepStUserID.executeQuery();
 
-        if (resultSetName.next() || resultSetID.next())
-        {
+        if (resultSetName.next() || resultSetID.next()) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -60,10 +50,8 @@ public class Database
      *
      * @return Exception
      */
-    public boolean isUserValid (String username, String password) throws Exception
-    {
-        if (username == null || password == null || username.equals("") || password.equals(""))
-        {
+    public boolean isUserValid(String username, String password) throws Exception {
+        if (username == null || password == null || username.equals("") || password.equals("")) {
             throw new Exception("用户名或密码为空");
         }
         String sqlUsername = "select * from author where author_name = ?";
@@ -71,19 +59,13 @@ public class Database
         preparedStatement.setString(1, username);
 
         ResultSet resultSetName = preparedStatement.executeQuery();
-        if (resultSetName.next())
-        {
-            if (resultSetName.getString("password").equals(password))
-            {
+        if (resultSetName.next()) {
+            if (resultSetName.getString("password").equals(password)) {
                 return true;
-            }
-            else
-            {
+            } else {
                 throw new Exception("密码错误");
             }
-        }
-        else
-        {
+        } else {
             throw new Exception("用户不存在");
         }
     }
@@ -91,8 +73,7 @@ public class Database
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------
-    public boolean registerNewUser (String username, String userId, String phone, String password) throws SQLException
-    {
+    public boolean registerNewUser(String username, String userId, String phone, String password) throws SQLException {
         String sqlUsername = "insert into author (author_name, author_registration_time, author_phone, password) values (?,?, ?, ?)";
         PreparedStatement prepStUsername = con.prepareStatement(sqlUsername);
 
@@ -107,22 +88,21 @@ public class Database
         prepStUserID.setString(1, userId);
         prepStUserID.setString(2, username);
 
-        if (prepStUsername.executeUpdate() != 0 && prepStUserID.executeUpdate() != 0)
-        {
+        if (prepStUsername.executeUpdate() != 0 && prepStUserID.executeUpdate() != 0) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public boolean PublishPost (String username, String title, String content, String country, String city, String fileName, byte[] file, boolean isUnknown) throws SQLException
-    {
-        String cityInsert = "insert into city (city, country) values (?, ?) on conflict do nothing";
+    public boolean PublishPost(String username, String title, String content, String country, String city, String fileName, byte[] file, boolean isUnknown) throws SQLException {
+        String cityInsert = "insert into city (city, country) select ?, ? where not exists (select * from city where city = ? and country = ?)";
         PreparedStatement preparedStatementCity = con.prepareStatement(cityInsert);
         preparedStatementCity.setString(1, city);
         preparedStatementCity.setString(2, country);
+        preparedStatementCity.setString(3, city);
+        preparedStatementCity.setString(4, country);
+
         preparedStatementCity.execute();
 
 
@@ -143,28 +123,23 @@ public class Database
         preparedStatement.setString(2, title);
         preparedStatement.setString(3, content);
         preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-        if (resultSetCity.next())
-        {
+        if (resultSetCity.next()) {
             preparedStatement.setInt(5, resultSetCity.getInt("city_id"));
         }
         preparedStatement.setString(6, username);
         preparedStatement.setString(7, fileName);
         preparedStatement.setBytes(8, file);
         preparedStatement.setBoolean(9, isUnknown);
-        try
-        {
+        try {
             preparedStatement.execute();
             return true;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println(e);
             return false;
         }
     }
 
-    public ResultSet getAllPost (String username) throws SQLException
-    {
+    public ResultSet getAllPost(String username) throws SQLException {
         String sql = "select * from post except select p.* from shield s join post p on s.author_shielded = p.author_name where s.author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql, TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         preparedStatement.setString(1, username);
@@ -173,8 +148,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getIthIdPost (int postId) throws SQLException
-    {
+    public ResultSet getIthIdPost(int postId) throws SQLException {
         String sql = "select * from post where post_id= ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
@@ -183,8 +157,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getPublishedPost (String username) throws SQLException
-    {
+    public ResultSet getPublishedPost(String username) throws SQLException {
         String sql = "select * from post where author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql, TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         preparedStatement.setString(1, username);
@@ -193,8 +166,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getUserFollowBy (String username) throws SQLException
-    {
+    public ResultSet getUserFollowBy(String username) throws SQLException {
         String sql = "select follow_author_name from author_followed_by where author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
@@ -202,8 +174,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getPostLiked (int postId) throws SQLException
-    {
+    public ResultSet getPostLiked(int postId) throws SQLException {
         String sql = "select author_name from post_liked where post_id = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
@@ -211,8 +182,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getPostShared (int postId) throws SQLException
-    {
+    public ResultSet getPostShared(int postId) throws SQLException {
         String sql = "select author_name from post_shared where post_id = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
@@ -220,8 +190,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getPostfavorited (int postId) throws SQLException
-    {
+    public ResultSet getPostfavorited(int postId) throws SQLException {
         String sql = "select author_name from post_favorited where post_id = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
@@ -229,98 +198,77 @@ public class Database
         return rs;
     }
 
-    public boolean likePost (String username, int postId) throws SQLException
-    {
+    public boolean likePost(String username, int postId) throws SQLException {
         String sql = "insert into post_liked (post_id, author_name) values (?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, username);
-        try
-        {
+        try {
             preparedStatement.execute();
             return true;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println(e);
             return false;
         }
     }
 
-    public boolean sharePost (String username, int postId) throws SQLException
-    {
+    public boolean sharePost(String username, int postId) throws SQLException {
         String sql = "insert into post_shared (post_id, author_name) values (?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, username);
-        try
-        {
+        try {
             preparedStatement.execute();
             return true;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
 //            System.out.println(e);
             return false;
         }
     }
 
-    public boolean favoritePost (String username, int postId) throws SQLException
-    {
+    public boolean favoritePost(String username, int postId) throws SQLException {
         String sql = "insert into post_favorited (post_id, author_name) values (?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
         preparedStatement.setString(2, username);
-        try
-        {
+        try {
             preparedStatement.execute();
             return true;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
 //            System.out.println(e);
             return false;
         }
     }
 
-    public boolean followUser (String username, String followUsername) throws SQLException
-    {
+    public boolean followUser(String username, String followUsername) throws SQLException {
         String sql = "insert into author_followed_by (author_name, follow_author_name) values (?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(2, followUsername);
         preparedStatement.setString(1, username);
-        try
-        {
+        try {
             preparedStatement.execute();
             return true;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println(e);
             return false;
         }
     }
 
-    public boolean unFollowUser (String username, String followUsername) throws SQLException
-    {
+    public boolean unFollowUser(String username, String followUsername) throws SQLException {
         String sql = "delete from author_followed_by where author_name = ? and follow_author_name = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(2, followUsername);
         preparedStatement.setString(1, username);
-        try
-        {
+        try {
             preparedStatement.execute();
             return true;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println(e);
             return false;
         }
     }
 
-    public ResultSet getPostReply (int postId) throws SQLException
-    {
+    public ResultSet getPostReply(int postId) throws SQLException {
         String sql = "select * from reply where post_id = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, postId);
@@ -328,8 +276,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getReplySecreply (int replyId) throws SQLException
-    {
+    public ResultSet getReplySecreply(int replyId) throws SQLException {
         String sql = "select * from sec_reply where reply_id = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, replyId);
@@ -337,10 +284,8 @@ public class Database
         return rs;
     }
 
-    public ResultSet searchPostOr (String author_name, String title, String content, int postId) throws SQLException
-    {
-        if (postId != -1)
-        {
+    public ResultSet searchPostOr(String author_name, String title, String content, int postId) throws SQLException {
+        if (postId != -1) {
             String sql = "select * from post where post.author_name like ? or post.title like ? or post.content like ?";
             PreparedStatement preparedStatement = con.prepareStatement(sql);
             preparedStatement.setString(1, "%" + author_name + "%");
@@ -348,9 +293,7 @@ public class Database
             preparedStatement.setString(3, "%" + content + "%");
             ResultSet rs = preparedStatement.executeQuery();
             return rs;
-        }
-        else
-        {
+        } else {
             String sql = "select * from post where post_id = ?";
             PreparedStatement preparedStatement = con.prepareStatement(sql);
             preparedStatement.setInt(1, postId);
@@ -359,10 +302,8 @@ public class Database
         }
     }
 
-    public ResultSet searchPostAnd (String author_name, String title, String content, int postId) throws SQLException
-    {
-        if (postId != -1)
-        {
+    public ResultSet searchPostAnd(String author_name, String title, String content, int postId) throws SQLException {
+        if (postId != -1) {
             String sql = "select * from post where post.author_name like ? and post.title like ? and post.content like ?";
             PreparedStatement preparedStatement = con.prepareStatement(sql);
             preparedStatement.setString(1, "%" + author_name + "%");
@@ -370,9 +311,7 @@ public class Database
             preparedStatement.setString(3, "%" + content + "%");
             ResultSet rs = preparedStatement.executeQuery();
             return rs;
-        }
-        else
-        {
+        } else {
             String sql = "select * from post where post_id = ?";
             PreparedStatement preparedStatement = con.prepareStatement(sql);
             preparedStatement.setInt(1, postId);
@@ -381,8 +320,7 @@ public class Database
         }
     }
 
-    public ResultSet getUserHadReply (String username) throws SQLException
-    {
+    public ResultSet getUserHadReply(String username) throws SQLException {
         String sql = "select * from reply r join post p on p.post_id = r.post_id where r.reply_author = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
@@ -390,8 +328,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getUserHadLiked (String username) throws SQLException
-    {
+    public ResultSet getUserHadLiked(String username) throws SQLException {
         String sql = "with tableTmp as ( select * from post_liked where author_name = ? ) select p.*  from post p join tableTmp t on p.post_id = t.post_id";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
@@ -399,8 +336,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getUserHadShared (String username) throws SQLException
-    {
+    public ResultSet getUserHadShared(String username) throws SQLException {
         String sql = "with tableTmp as ( select * from post_shared where author_name = ?) select * from post p join tableTmp t on p.post_id = t.post_id";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
@@ -408,8 +344,7 @@ public class Database
         return rs;
     }
 
-    public ResultSet getUserHadFavorited (String username) throws SQLException
-    {
+    public ResultSet getUserHadFavorited(String username) throws SQLException {
         String sql = "with tableTmp as ( select * from post_favorited where author_name = ?) select * from post p join tableTmp t on p.post_id = t.post_id";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
@@ -417,24 +352,19 @@ public class Database
         return rs;
     }
 
-    public boolean blockUser (String username, String beBlockedUserName) throws SQLException
-    {
+    public boolean blockUser(String username, String beBlockedUserName) throws SQLException {
         String sql = "insert into shield (author_name, author_shielded) values (?, ?)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, beBlockedUserName);
-        if (preparedStatement.executeUpdate() == 0)
-        {
+        if (preparedStatement.executeUpdate() == 0) {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
 
-    public ResultSet getIthreply (int replyId) throws SQLException
-    {
+    public ResultSet getIthreply(int replyId) throws SQLException {
         String sql = "select reply_content, reply_author, reply_stars from reply where reply_id = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, replyId);
@@ -442,8 +372,7 @@ public class Database
         return rs;
     }
 
-    public boolean replyPost (int postId, String replyContent, String replyAuthorName) throws SQLException
-    {
+    public boolean replyPost(int postId, String replyContent, String replyAuthorName) throws SQLException {
         String sqlGetReplyCnt = "select * from reply";
         PreparedStatement preparedStatementGetReplyCnt = con.prepareStatement(sqlGetReplyCnt, TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet rs = preparedStatementGetReplyCnt.executeQuery();
@@ -457,39 +386,95 @@ public class Database
         preparedStatement.setString(2, replyContent);
         preparedStatement.setString(3, replyAuthorName);
         preparedStatement.setInt(4, replyCnt + 1);
-        if (preparedStatement.executeUpdate() == 0)
-        {
+        if (preparedStatement.executeUpdate() == 0) {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
 
-    public boolean replySecReply (int replyId, String secReplyContent, String replyAuthorName) throws SQLException
-    {
+    public boolean replySecReply(int replyId, String secReplyContent, String replyAuthorName) throws SQLException {
         String sql = "insert into sec_reply (reply_id, sec_reply_content, sec_reply_author, sec_reply_stars) values (?, ?, ?, 0)";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setInt(1, replyId);
         preparedStatement.setString(2, secReplyContent);
         preparedStatement.setString(3, replyAuthorName);
-        if (preparedStatement.executeUpdate() == 0)
-        {
+        if (preparedStatement.executeUpdate() == 0) {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
-    }
+    }                                                                                                               //s 用时间差倒数          参数              限制取的条数
 
-    public ResultSet getHotSearches (int likedWeight, int sharedWeight, int favoritedWeight, int replyWeight, int timeDifferenceWeight, int timeDivParameter, int limit) throws SQLException
-    {
-        String sql = "with LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference as (with LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt as(with LikedCnt_SharedCnt_FavoritedCnt as (with LikedCnt_SharedCnt as (with LikedCnt as (select p.*, count(*) as likedCnt from post p left join post_liked pl on p.post_id = pl.post_id group by p.post_id, p.title,p.content,p.posting_time,p.posting_city_id,p.posting_city_id,p.author_name,p.filename, p.file, p.isunknown)select p.*, count(*) as sharedCnt  from LikedCnt p left join post_shared ps on p.post_id = ps.post_id group by p.post_id, p.title, p.content, p.posting_time, p.posting_city_id, p.posting_city_id, p.author_name, p.filename, p.file, p.isunknown, p.likedCnt) select p.*, count(*) as favoritedCnt from LikedCnt_SharedCnt p  left join post_favorited pf on p.post_id = pf.post_id group by p.post_id, p.title, p.content, p.posting_time, p.posting_city_id,  p.posting_city_id,  p.author_name, p.filename, p.file, p.isunknown, p.likedCnt,  p.sharedCnt) select p.*, count(*) as replyCnt from LikedCnt_SharedCnt_FavoritedCnt p left join reply r on p.post_id = r.post_id  group by p.post_id, p.title, p.content, p.posting_time, p.posting_city_id,  p.posting_city_id,   p.author_name, p.filename, p.file, p.isunknown, p.likedCnt, p.sharedCnt, p.favoritedCnt)\n" +
+    public ResultSet getHotSearches(int likedWeight, int sharedWeight, int favoritedWeight, int replyWeight, int timeDifferenceWeight, int timeDivParameter, int limit) throws SQLException {
+        String sql = "with LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference as (with LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt\n" +
+                "                                                                          as (with LikedCnt_SharedCnt_FavoritedCnt\n" +
+                "                                                                                       as (with LikedCnt_SharedCnt\n" +
+                "                                                                                                    as (with LikedCnt\n" +
+                "                                                                                                                 as (select p.*, count(*) as likedCnt\n" +
+                "                                                                                                                     from post p\n" +
+                "                                                                                                                              left join post_liked pl on p.post_id = pl.post_id\n" +
+                "                                                                                                                     group by p.post_id,\n" +
+                "                                                                                                                              p.title,\n" +
+                "                                                                                                                              p.content,\n" +
+                "                                                                                                                              p.posting_time,\n" +
+                "                                                                                                                              p.posting_city_id,\n" +
+                "                                                                                                                              p.posting_city_id,\n" +
+                "                                                                                                                              p.author_name,\n" +
+                "                                                                                                                              p.filename,\n" +
+                "                                                                                                                              p.file,\n" +
+                "                                                                                                                              p.isunknown)\n" +
+                "                                                                                                        select p.*, count(*) as sharedCnt\n" +
+                "                                                                                                        from LikedCnt p\n" +
+                "                                                                                                                 left join post_shared ps on p.post_id = ps.post_id\n" +
+                "                                                                                                        group by p.post_id,\n" +
+                "                                                                                                                 p.title,\n" +
+                "                                                                                                                 p.content,\n" +
+                "                                                                                                                 p.posting_time,\n" +
+                "                                                                                                                 p.posting_city_id,\n" +
+                "                                                                                                                 p.posting_city_id,\n" +
+                "                                                                                                                 p.author_name,\n" +
+                "                                                                                                                 p.filename,\n" +
+                "                                                                                                                 p.file,\n" +
+                "                                                                                                                 p.isunknown,\n" +
+                "                                                                                                                 p.likedCnt)\n" +
+                "                                                                                           select p.*, count(*) as favoritedCnt\n" +
+                "                                                                                           from LikedCnt_SharedCnt p\n" +
+                "                                                                                                    left join post_favorited pf on p.post_id = pf.post_id\n" +
+                "                                                                                           group by p.post_id, p.title,\n" +
+                "                                                                                                    p.content,\n" +
+                "                                                                                                    p.posting_time,\n" +
+                "                                                                                                    p.posting_city_id,\n" +
+                "                                                                                                    p.posting_city_id,\n" +
+                "                                                                                                    p.author_name,\n" +
+                "                                                                                                    p.filename, p.file,\n" +
+                "                                                                                                    p.isunknown,\n" +
+                "                                                                                                    p.likedCnt,\n" +
+                "                                                                                                    p.sharedCnt)\n" +
+                "                                                                              select p.*, count(*) as replyCnt\n" +
+                "                                                                              from LikedCnt_SharedCnt_FavoritedCnt p\n" +
+                "                                                                                       left join reply r on p.post_id = r.post_id\n" +
+                "                                                                              group by p.post_id, p.title, p.content,\n" +
+                "                                                                                       p.posting_time,\n" +
+                "                                                                                       p.posting_city_id,\n" +
+                "                                                                                       p.posting_city_id, p.author_name,\n" +
+                "                                                                                       p.filename, p.file, p.isunknown,\n" +
+                "                                                                                       p.likedCnt, p.sharedCnt,\n" +
+                "                                                                                       p.favoritedCnt)\n" +
                 "\n" +
-                "select * , div(" + timeDivParameter + ",(extract(seconds from now()-posting_time)*1 + extract(minutes from now()-posting_time)*60 + extract(hours from now()-posting_time)*60*60 + extract(days from now()-posting_time)*24*60*60)) as timeDifference from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt)\n" +
-                "select *, (likedCnt *"+ likedWeight +"+ sharedCnt *"+ sharedWeight +"+ favoritedCnt *"+ favoritedWeight +"+ replyCnt *"+ replyWeight +" + timeDifference * "+ timeDifferenceWeight +") as totalWeight from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference order by totalWeight desc limit "+ limit +";";
+                "                                                                 select *,\n" +
+                "                                                                        div("+timeDifferenceWeight+",\n" +
+                "                                                                            (extract(seconds from now() - posting_time) *\n" +
+                "                                                                             1 +\n" +
+                "                                                                             extract(minutes from now() - posting_time) *\n" +
+                "                                                                             60 +\n" +
+                "                                                                             extract(hours from now() - posting_time) *\n" +
+                "                                                                             60 * 60 +\n" +
+                "                                                                             extract(days from now() - posting_time) *\n" +
+                "                                                                             24 * 60 * 60)::integer) as timeDifference\n" +
+                "                                                                 from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt)\n" +
+                "select *, (+likedCnt * "+likedWeight+" + sharedCnt * "+sharedWeight+" + favoritedCnt * "+favoritedWeight+" + replyCnt * "+replyWeight+" + timeDifference * "+timeDifferenceWeight+") as totalWeight\n" +
+                "from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference order by totalWeight desc limit "+limit+";\n";
 
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         ResultSet rs = preparedStatement.executeQuery();

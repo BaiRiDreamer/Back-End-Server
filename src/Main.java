@@ -14,12 +14,18 @@ import java.util.concurrent.*;
 public class Main
 {
     private static final int PORT = 7345;               //默认服务器监听地址
-    private static final String host = "localhost";
-    private static final String port = "5432";
-    private static final String dbname = "Project2";
-    private static final String user = "checker";
-    private static final String pwd = "123456";
+    private static final String host = "192.168.62.128";
+    private static final String port = "7654";
+    private static final String dbname = "postgres";
+    private static final String user = "test";
+    private static final String pwd = "Test@123";
 
+//    private static final int PORT = 7345;               //默认服务器监听地址
+//    private static final String host = "192.168.62.128";
+//    private static final String port = "7654";
+//    private static final String dbname = "postgres";
+//    private static final String user = "test";
+//    private static final String pwd = "Test@123";
 
     public static void main (String[] args)
     {

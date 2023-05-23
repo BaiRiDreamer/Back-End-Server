@@ -840,7 +840,7 @@ public class Command implements Serializable
                     jsonObject.put("file", resultSet.getBytes("file"));
                     jsonObject.put("isunKnown", resultSet.getBoolean("isunKnown"));
                     jsonObject.put("totalWeight", resultSet.getInt("totalWeight"));
-                    jsonObject.put("likeCnt", resultSet.getInt("likeCnt"));
+                    jsonObject.put("likeCnt", resultSet.getInt("likedCnt"));
                     jsonObject.put("sharedCnt", resultSet.getInt("sharedCnt"));
                     jsonObject.put("favoritedCnt", resultSet.getInt("favoritedCnt"));
                     jsonObject.put("replyCnt", resultSet.getInt("replyCnt"));
