@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 public class Main
 {
-    private static  String PORT = "7345";               //默认服务器监听地址
+    private static  int PORT = 7345;               //默认服务器监听地址
 
 
     private static  String host = "192.168.62.128";
@@ -26,12 +26,11 @@ public class Main
     private static  String user = "test";
     private static  String pwd = "Test@123";
 
-//    private static final int PORT = 7345;               //默认服务器监听地址
-//    private static final String host = "192.168.62.128";
-//    private static final String port = "7654";
-//    private static final String dbname = "postgres";
-//    private static final String user = "test";
-//    private static final String pwd = "Test@123";
+//    private static  String host = "localhost";
+//    private static  String port = "5432";
+//    private static  String dbname = "Project2";
+//    private static  String user = "checker";
+//    private static  String pwd = "123456";
 
     public static void main (String[] args)
     {
@@ -40,8 +39,8 @@ public class Main
             Scanner scanner = new Scanner(new File(desktopPath));
             String  hostRegex = "Host = \".+\"";
             String  portRegex = "Port = \"[0-9]*\"";
-            String  dbnameRegex = "DBName = \"[a-z0-9]*\"";
-            String  userRegex = "User = \"[a-z0-9_@]*\"";
+            String  dbnameRegex = "DBName = \"[a-zA-Z0-9]*\"";
+            String  userRegex = "User = \".+\"";
             String  pwdRegex = "Pwd = \".+\"";
 
 
@@ -75,7 +74,6 @@ public class Main
         {
             e.printStackTrace();
             System.err.println("back.properties not found");
-            System.exit(0);
         }
 
         /**
@@ -103,7 +101,7 @@ public class Main
         /**
          * 创建服务器套接字，持续监听端口并进行相关操作
          */
-        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(PORT)))
+        try (ServerSocket serverSocket = new ServerSocket(PORT))
         {
             System.out.println("Server is listening on port " + PORT + " ("+LocalDateTime.now()+")");
             Database database = new Database();
