@@ -1,10 +1,14 @@
 import com.alibaba.druid.pool.DruidDataSource;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 import java.util.concurrent.*;
+import java.util.regex.Pattern;
 
 /**
  * 主函数，控制客户端请求的接受与处理
@@ -13,12 +17,14 @@ import java.util.concurrent.*;
  */
 public class Main
 {
-    private static final int PORT = 7345;               //默认服务器监听地址
-    private static final String host = "192.168.62.128";
-    private static final String port = "7654";
-    private static final String dbname = "postgres";
-    private static final String user = "test";
-    private static final String pwd = "Test@123";
+    private static  String PORT = "7345";               //默认服务器监听地址
+
+
+    private static  String host = "192.168.62.128";
+    private static  String port = "7654";
+    private static  String dbname = "postgres";
+    private static  String user = "test";
+    private static  String pwd = "Test@123";
 
 //    private static final int PORT = 7345;               //默认服务器监听地址
 //    private static final String host = "192.168.62.128";
@@ -29,6 +35,49 @@ public class Main
 
     public static void main (String[] args)
     {
+        try
+        {   String desktopPath = System.getProperty("user.home") + "\\Desktop\\back.properties";
+            Scanner scanner = new Scanner(new File(desktopPath));
+            String  hostRegex = "Host = \".+\"";
+            String  portRegex = "Port = \"[0-9]*\"";
+            String  dbnameRegex = "DBName = \"[a-z0-9]*\"";
+            String  userRegex = "User = \"[a-z0-9_@]*\"";
+            String  pwdRegex = "Pwd = \".+\"";
+
+
+            while (scanner.hasNextLine())
+            {
+                String line = scanner.nextLine();
+                line = line.trim();
+                if (Pattern.matches(hostRegex, line))
+                {
+                    host = line.substring(8, line.length() - 1);
+                }
+                else if (line.matches(portRegex))
+                {
+                    port = line.substring(8, line.length() - 1);
+                }
+                else if (line.matches(dbnameRegex))
+                {
+                    dbname = line.substring(10, line.length() - 1);
+                }
+                else if (line.matches(userRegex))
+                {
+                    user = line.substring(8, line.length() - 1);
+                }
+                else if (line.matches(pwdRegex))
+                {
+                    pwd = line.substring(7, line.length() - 1);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            System.err.println("back.properties not found");
+            System.exit(0);
+        }
+
         /**
          * 创建线程池
          */
@@ -54,7 +103,7 @@ public class Main
         /**
          * 创建服务器套接字，持续监听端口并进行相关操作
          */
-        try (ServerSocket serverSocket = new ServerSocket(PORT))
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(PORT)))
         {
             System.out.println("Server is listening on port " + PORT + " ("+LocalDateTime.now()+")");
             Database database = new Database();
