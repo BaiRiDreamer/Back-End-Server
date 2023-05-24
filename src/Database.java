@@ -463,7 +463,7 @@ public class Database {
                 "                                                                                       p.favoritedCnt)\n" +
                 "\n" +
                 "                                                                 select *,\n" +
-                "                                                                        div("+timeDivParameter+",\n" +
+                "                                                                        div("+timeDivParameter+"::bigint,\n" +
                 "                                                                            (extract(seconds from now() - posting_time) *\n" +
                 "                                                                             1 +\n" +
                 "                                                                             extract(minutes from now() - posting_time) *\n" +
@@ -471,7 +471,7 @@ public class Database {
                 "                                                                             extract(hours from now() - posting_time) *\n" +
                 "                                                                             60 * 60 +\n" +
                 "                                                                             extract(days from now() - posting_time) *\n" +
-                "                                                                             24 * 60 * 60)::integer) as timeDifference\n" +
+                "                                                                             24 * 60 * 60)::bigint)::bigint as timeDifference\n" +
                 "                                                                 from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt)\n" +
                 "select *, (+likedCnt * "+likedWeight+" + sharedCnt * "+sharedWeight+" + favoritedCnt * "+favoritedWeight+" + replyCnt * "+replyWeight+" + timeDifference * "+timeDifferenceWeight+") as totalWeight\n" +
                 "from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference order by totalWeight desc limit "+limit+";\n";
