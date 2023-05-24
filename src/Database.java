@@ -463,7 +463,7 @@ public class Database {
                 "                                                                                       p.favoritedCnt)\n" +
                 "\n" +
                 "                                                                 select *,\n" +
-                "                                                                        div("+timeDifferenceWeight+",\n" +
+                "                                                                        div("+timeDivParameter+",\n" +
                 "                                                                            (extract(seconds from now() - posting_time) *\n" +
                 "                                                                             1 +\n" +
                 "                                                                             extract(minutes from now() - posting_time) *\n" +
@@ -475,7 +475,6 @@ public class Database {
                 "                                                                 from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt)\n" +
                 "select *, (+likedCnt * "+likedWeight+" + sharedCnt * "+sharedWeight+" + favoritedCnt * "+favoritedWeight+" + replyCnt * "+replyWeight+" + timeDifference * "+timeDifferenceWeight+") as totalWeight\n" +
                 "from LikedCnt_SharedCnt_FavoritedCnt_ReplyCnt_TimeDifference order by totalWeight desc limit "+limit+";\n";
-
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         ResultSet rs = preparedStatement.executeQuery();
         return rs;
