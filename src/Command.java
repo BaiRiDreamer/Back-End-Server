@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -41,7 +42,7 @@ public class Command implements Serializable
         return result;
     }
 
-    public Response execute () throws Exception
+    public Response execute ()
     {
         if (command.equals("isUserExist"))
         {
@@ -82,14 +83,15 @@ public class Command implements Serializable
         }
         else if (command.equals("registerNewUser"))
         {
-            if (database.isUserExist(args[0], args[1]))
+            try
             {
-                throw new Exception("用户名或者ID已经存在");
-            }
-            else
-            {
-                try
+                if (database.isUserExist(args[0], args[1]))
                 {
+                    return new Response("false", "用户已经存在");
+                }
+                else
+                {
+
                     if (database.registerNewUser(args[0], args[1], args[2], args[3]))
                     {
                         return new Response("true", "Register successfully");
@@ -99,11 +101,10 @@ public class Command implements Serializable
                         return new Response("false", "Register failed");
                     }
                 }
-                catch (SQLException e)
-                {
-                    System.err.println(e);
-                    return new Response("DatabaseErr", e.getMessage());
-                }
+            }
+            catch (SQLException e)
+            {
+                return new Response("DatabaseErr", e.getMessage());
             }
         }
         else if (command.equals("PublishPost"))
@@ -825,7 +826,7 @@ public class Command implements Serializable
         {
             try
             {
-                ResultSet resultSet = database.getHotSearches(Integer.parseInt(args[0]),Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]));
+                ResultSet resultSet = database.getHotSearches(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]));
                 JSONArray jsonArray = new JSONArray();
                 while (resultSet.next())
                 {
